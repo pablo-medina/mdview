@@ -31,7 +31,8 @@ const openFile = () => {
             const mdBuffer = fs.readFileSync(filePath);
             const mdContent = mdBuffer.toString();
             const htmlContent = marked.parse(mdContent);
-            console.log('HTMl Generado:', htmlContent);
+            console.log('HTML Generado:', htmlContent);
+            mainWindow.webContents.send('file:open', { path: filePath, content: `${htmlContent}` });
         }
     }).catch(err => {
         console.error(err);
@@ -76,7 +77,8 @@ const createWindow = () => {
         title: 'Angular Electron',
         resizable: true,
         webPreferences: {
-            preload: `${app.getAppPath()}/preload.js`
+            preload: `${app.getAppPath()}/preload.js`,
+            contextIsolation: true
         }
     });
 

@@ -1,0 +1,16 @@
+.app {
+    overflow: hidden;
+    width: 100%;
+    height: 100%;
+    background: #f0f0f0;
+    display: flex;
+    flex-direction: column;
+
+    .content {
+        overflow-x: hidden;
+        overflow-y: auto;
+        border: 1px solid #aaa;
+        padding: 10px;
+        flex-grow: 1;
+    }
+}
