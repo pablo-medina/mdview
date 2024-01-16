@@ -3,6 +3,7 @@ import { fileURLToPath } from 'url';
 import { dirname } from 'path';
 import fs from 'fs';
 import * as marked from 'marked';
+import markdownpdf from 'markdown-pdf';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -10,6 +11,8 @@ const __dirname = dirname(__filename);
 console.log('DIRNAME:', __dirname);
 
 let mainWindow;
+
+let currentFile = undefined;
 
 const openFile = () => {
     // Mostrar cuadro de diálogo para abrir archivo
@@ -33,10 +36,39 @@ const openFile = () => {
             const htmlContent = marked.parse(mdContent);
             console.log('HTML Generado:', htmlContent);
             mainWindow.webContents.send('file:open', { path: filePath, content: `${htmlContent}` });
+            currentFile = filePath;
         }
     }).catch(err => {
         console.error(err);
     })
+}
+
+const convertFile = () => {
+    // Mostrar cuadro de diálogo para guardar archivo
+    if (currentFile) {
+        dialog.showSaveDialog(mainWindow, {
+            properties: ['saveFile'],
+            filters: [
+                {
+                    name: 'Archivos PDF (*.pdf)',
+                    extensions: ['pdf']
+                }
+            ]
+        }).then(result => {
+            if (!result.canceled) {
+                const outputFilePath = result.filePath;
+                console.log('Archivo a guardar:', outputFilePath);
+
+                // Convertir el archivo markdown a PDF
+                markdownpdf().from.path(currentFile).to(outputFilePath, () => {
+                    console.log(`Se ha creado el archivo PDF en: ${outputFilePath}`);
+                    mainWindow.webContents.send('file:convert', outputFilePath);
+                })
+            }
+        }).catch(err => {
+            console.error(err);
+        })
+    }
 }
 
 const toggleDevTools = () => {
@@ -52,7 +84,7 @@ const defaultMenu = Menu.buildFromTemplate([
         label: 'Archivo',
         submenu: [
             { role: 'open', label: 'Abrir', click: openFile },
-            { role: 'pdf', label: 'Convertir a PDF...' },
+            { role: 'pdf', label: 'Convertir a PDF...', click: convertFile },
             { type: 'separator' },
             { role: 'quit', label: 'Salir' } // Role quit implementa cierre automático
         ]

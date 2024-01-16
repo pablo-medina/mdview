@@ -20,5 +20,6 @@ window.addEventListener('DOMContentLoaded', () => {
 
 // Exponer Renderer para que sea visible desde Angular
 contextBridge.exposeInMainWorld('api', {
-  onFileOpen: callback => ipcRenderer.on('file:open', (_event, value) => callback(value))
+  onFileOpen: callback => ipcRenderer.on('file:open', (_event, value) => callback(value)),
+  onFileConvert: callback => ipcRenderer.on('file:convert', (_event, value) => callback(value)),
 });

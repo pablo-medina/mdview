@@ -19,7 +19,7 @@ export class AppComponent implements OnInit {
   path = '';
   content = '<p>No se ha abierto ningún archivo</p>';
 
-  constructor(private cdr: ChangeDetectorRef) {}
+  constructor(private cdr: ChangeDetectorRef) { }
 
   ngOnInit(): void {
     const api = (<any>window).api;
@@ -30,5 +30,9 @@ export class AppComponent implements OnInit {
       this.content = data.content;
       this.cdr.detectChanges();
     });
+    api.onFileConvert((path: string) => {
+      console.debug('Archivo generado:', path);
+    });
   }
 }
+
