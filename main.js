@@ -1,6 +1,8 @@
 import { app, BrowserWindow, dialog, Menu } from 'electron';
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
+import fs from 'fs';
+import * as marked from 'marked';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -26,6 +28,10 @@ const openFile = () => {
         if (!result.canceled) {
             const filePath = result.filePaths[0];
             console.log('Archivo seleccionado:', filePath);
+            const mdBuffer = fs.readFileSync(filePath);
+            const mdContent = mdBuffer.toString();
+            const htmlContent = marked.parse(mdContent);
+            console.log('HTMl Generado:', htmlContent);
         }
     }).catch(err => {
         console.error(err);
