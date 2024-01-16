@@ -35,12 +35,12 @@ const openFile = () => {
             const mdContent = mdBuffer.toString();
             const htmlContent = marked.parse(mdContent);
             console.log('HTML Generado:', htmlContent);
-            mainWindow.webContents.send('file:open', { path: filePath, content: `${htmlContent}` });
+            mainWindow.webContents.send('file:open', { path: filePath, content: `<div class="markdown-content">${htmlContent}</div>` });
             currentFile = filePath;
         }
     }).catch(err => {
         console.error(err);
-    })
+    }) 
 }
 
 const convertFile = () => {
@@ -60,7 +60,7 @@ const convertFile = () => {
                 console.log('Archivo a guardar:', outputFilePath);
 
                 // Convertir el archivo markdown a PDF
-                markdownpdf().from.path(currentFile).to(outputFilePath, () => {
+                markdownpdf({cssPath: './estilos.css'}).from.path(currentFile).to(outputFilePath, () => {
                     console.log(`Se ha creado el archivo PDF en: ${outputFilePath}`);
                     mainWindow.webContents.send('file:convert', outputFilePath);
                 })
