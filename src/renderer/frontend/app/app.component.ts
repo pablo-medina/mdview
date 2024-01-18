@@ -24,15 +24,17 @@ export class AppComponent implements OnInit {
   ngOnInit(): void {
     const api = (<any>window).api;
     console.log('API:', api);
-    api.onFileOpen((data: FileOpenData) => {
-      console.debug('Received Data:', data);
-      this.path = data.path;
-      this.content = data.content;
-      this.cdr.detectChanges();
-    });
-    api.onFileConvert((path: string) => {
-      console.debug('Archivo generado:', path);
-    });
+    if (api) {
+      api.onFileOpen((data: FileOpenData) => {
+        console.debug('Received Data:', data);
+        this.path = data.path;
+        this.content = data.content;
+        this.cdr.detectChanges();
+      });
+      api.onFileConvert((path: string) => {
+        console.debug('Archivo generado:', path);
+      });
+    }
   }
 }
 

@@ -4,33 +4,33 @@
   "newProjectRoot": "projects",
   "projects": {
     "mdview": {
-      "projectType": "application",
+      "projectType": "application",      
       "schematics": {
         "@schematics/angular:component": {
           "style": "scss"
         }
       },
       "root": "",
-      "sourceRoot": "src/renderer",
+      "sourceRoot": "src/renderer/frontend",
       "prefix": "app",
       "architect": {
         "build": {
           "builder": "@angular-devkit/build-angular:application",
           "options": {
             "outputPath": "dist",
-            "index": "src/renderer/index.html",
-            "browser": "src/renderer/main.ts",
+            "index": "src/renderer/frontend/index.html",
+            "browser": "src/renderer/frontend/main.ts",
             "polyfills": [
               "zone.js"
             ],
-            "tsConfig": "tsconfig.app.json",
+            "tsConfig": "tsconfig.renderer.app.json",
             "inlineStyleLanguage": "scss",
             "assets": [
-              "src/renderer/favicon.ico",
-              "src/renderer/assets"
+              "src/renderer/frontend/favicon.ico",
+              "src/renderer/frontend/assets"
             ],
             "styles": [
-              "src/renderer/styles.scss"
+              "src/renderer/frontend/styles.scss"
             ],
             "scripts": []
           },
@@ -83,14 +83,14 @@
               "zone.js",
               "zone.js/testing"
             ],
-            "tsConfig": "tsconfig.spec.json",
+            "tsConfig": "tsconfig.renderer.spec.json",
             "inlineStyleLanguage": "scss",
             "assets": [
-              "src/renderer/favicon.ico",
-              "src/renderer/assets"
+              "src/renderer/frontend/favicon.ico",
+              "src/renderer/frontend/assets"
             ],
             "styles": [
-              "src/renderer/styles.scss"
+              "src/renderer/frontend/styles.scss"
             ],
             "scripts": []
           }

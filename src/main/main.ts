@@ -3,8 +3,16 @@ import path from 'path';
 import fs from 'fs';
 import * as marked from 'marked';
 
-let mainWindow: Electron.BrowserWindow = undefined;
-let currentFile: string = undefined;
+const Platform = {
+  isDevMode: !!(process.env.MDVIEW_ENV === 'development')
+}
+
+console.log(process.env.MDVIEW_ENV);
+console.log(process.env.MDVIEW_ENV === 'development');
+console.log(!!(process.env.MDVIEW_ENV === 'development'));
+
+let mainWindow: Electron.BrowserWindow | undefined = undefined;
+let currentFile: string = '';
 
 async function convertMarkdownToHTML(mdFilePath: string): Promise<string> {
   console.log('Archivo:', mdFilePath);
@@ -12,13 +20,16 @@ async function convertMarkdownToHTML(mdFilePath: string): Promise<string> {
   const mdContent = mdBuffer.toString();
   const htmlContent = marked.parse(mdContent);
   console.log('HTML Generado:', htmlContent);
-  console.log('WEBC:', mainWindow.webContents);
 
   const content = `<div class="markdown-content">${htmlContent}</div>`;
   return content;
 }
 
 async function convertHTMLToPDF(htmlString: string, pdfFilePath: string): Promise<boolean> {
+  if (!mainWindow) {
+    throw new Error('Ventana principal no inicializada');
+  }
+
   const options: PrintToPDFOptions = {
     pageSize: 'A4',
     printBackground: true,
@@ -33,6 +44,9 @@ async function convertHTMLToPDF(htmlString: string, pdfFilePath: string): Promis
 }
 
 const openFile = () => {
+  if (!mainWindow) {
+    throw new Error('Ventana principal no inicializada');
+  }
   // Mostrar cuadro de diálogo para abrir archivo
   dialog.showOpenDialog(mainWindow, {
     properties: ['createDirectory'],
@@ -51,9 +65,14 @@ const openFile = () => {
       convertMarkdownToHTML(filePath)
         .then(htmlContent => {
           console.log('HTML Generado:', htmlContent);
-          mainWindow.webContents.send('file:open', { path: filePath, content: htmlContent });
+          mainWindow?.webContents.send('file:open', { path: filePath, content: htmlContent });
           currentFile = filePath;
-          Menu.getApplicationMenu().getMenuItemById('convert').enabled = true;
+
+          const convertMenu = Menu.getApplicationMenu()?.getMenuItemById('convert');
+
+          if (convertMenu) {
+            convertMenu.enabled = true;
+          }
         }).catch(err => {
           console.error(err);
         })
@@ -64,8 +83,11 @@ const openFile = () => {
 }
 
 const convertFile = () => {
+  if (!mainWindow) {
+    throw new Error('Ventana principal no inicializada');
+  }
   // Mostrar cuadro de diálogo para guardar archivo
-  if (currentFile) {
+  if (currentFile.trim().length > 0) {
     dialog.showSaveDialog(mainWindow, {
       properties: ['showOverwriteConfirmation'],
       filters: [
@@ -77,6 +99,9 @@ const convertFile = () => {
     }).then(result => {
       if (!result.canceled) {
         const outputFilePath = result.filePath;
+        if (!outputFilePath) {
+          throw new Error('No se seleccionó archivo de salida');
+        }
         console.log('Archivo a guardar:', outputFilePath);
 
         // Convertir el archivo Markdown a HTML
@@ -84,7 +109,7 @@ const convertFile = () => {
           .then(htmlString => convertHTMLToPDF(htmlString, outputFilePath))
           .then(() => {
             console.log(`Se ha creado el archivo PDF en: ${outputFilePath}`);
-            mainWindow.webContents.send('file:convert', outputFilePath);
+            mainWindow?.webContents.send('file:convert', outputFilePath);
           })
           .catch(err => {
             console.error(err);
@@ -140,8 +165,14 @@ const createWindow = (): BrowserWindow => {
     show: false
   });
 
-  // Cargar index.html de Angular
-  mainWindow.loadFile(path.join(__dirname, `browser/index.html`));
+  if (Platform.isDevMode) {
+    // Cargar index.html provisto por 'ng serve'
+    mainWindow.loadURL('http://localhost:4200');
+    mainWindow.webContents.openDevTools();
+  } else {
+    // Cargar index.html compilado en dist
+    mainWindow.loadFile(path.join(__dirname, `browser/index.html`));
+  }
 
   // Agregar el menú personalizado - Si uso mainWindow.setMenu() cuango hago getApplicationMenu me trae el menú por defecto de Electron
   Menu.setApplicationMenu(buildDefaultMenu());
