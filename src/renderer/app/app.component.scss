@@ -1,0 +1,108 @@
+.app::ng-deep {
+    @media screen {
+        overflow: hidden;
+        background: #b0b0b0;
+        margin: 0;
+        padding: 0;
+        height: calc(100% - 1rem);
+        padding: 0.5rem;
+
+        .file-viewer {
+            overflow-x: hidden;
+            overflow-y: auto;
+            padding: 0.5rem;
+            margin: 0;
+            height: calc(100% - 1rem);
+            border: 1px solid #aaa;
+            background: #f0f0f0;
+            border-radius: 12px;
+            box-shadow: rgba(0, 0, 0, 0.16) 0px 10px 36px 0px, rgba(0, 0, 0, 0.06) 0px 0px 0px 1px;
+        }
+
+        .content {
+            overflow: hidden;
+            padding: 0;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+
+            .markdown-content {
+                padding: 0;
+                margin: 0;
+                overflow: hidden;
+            }
+
+            table {
+                border: 1px solid gray;
+                font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji";
+                font-size: 16px;
+                line-height: 1.5;
+                border-spacing: 0;
+                box-shadow: rgba(0, 0, 0, 0.05) 0px 6px 24px 0px, rgba(0, 0, 0, 0.08) 0px 0px 0px 1px;
+                transition: box-shadow 0.25s ease-in;
+
+                &:hover {
+                    box-shadow: rgba(0, 0, 0, 0.25) 0px 14px 28px, rgba(0, 0, 0, 0.22) 0px 10px 10px;
+                    transition: box-shadow 0.25s ease-out;
+                }
+
+                tr {
+                    border: 1px solid #bbb;
+                    padding: 0;
+                    margin: 0;
+                }
+
+                td {
+                    border: 1px solid #bbb;
+                    padding: 0.5rem;
+                    margin: 0;
+                }
+
+                tr:nth-child(even) {
+                    background: #d0d0d0;
+                }
+
+                tr:nth-child(odd) {
+                    background: #f2f2f2;
+                }
+            }
+        }
+    }
+}
+
+@media print {
+    .app::ng-deep {
+        margin: 0;
+        padding: 0;        
+
+        .markdown-content {
+            print-color-adjust: exact; // Respetar los colores de fondo definidos
+
+            table {
+                border: 1px solid gray;
+                line-height: 1.5;
+                border-spacing: 0;
+            }
+
+            tr {
+                border: 1px solid #bbb;
+                padding: 0;
+                margin: 0;
+            }
+
+            td {
+                border: 1px solid #bbb;
+                padding: 0.5rem;
+                margin: 0;
+            }
+
+            tr:nth-child(even) {
+                background-color: #d0d0d0;
+            }
+
+            tr:nth-child(odd) {
+                background-color: #f2f2f2;
+            }
+        }
+    }
+}
