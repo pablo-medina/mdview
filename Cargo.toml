@@ -1,0 +1,32 @@
+[package]
+name = "mdview"
+version = "0.1.0"
+edition = "2021"
+authors = ["Pablo Medina"]
+description = "Un visor de markdown multiplataforma escrito en Rust"
+
+[dependencies]
+eframe = { version = "0.31", default-features = true, features = ["default_fonts", "persistence"] }
+egui = "0.31"
+egui-phosphor = "0.9"
+pulldown-cmark = "0.9"
+rfd = "0.12"
+tokio = { version = "1.0", features = ["full"] }
+serde = { version = "1.0", features = ["derive"] }
+clap = { version = "4.0", features = ["derive"] }
+sys-locale = "0.3"
+
+# Dependencias específicas para Windows
+[target.'cfg(windows)'.dependencies]
+winapi = { version = "0.3", features = ["winuser", "windef", "shellapi", "impl-default"] }
+
+[target.'cfg(not(target_arch = "wasm32"))'.dependencies]
+env_logger = "0.10"
+
+[target.'cfg(target_arch = "wasm32")'.dependencies]
+wasm-bindgen-futures = "0.4"
+console_error_panic_hook = "0.1"
+
+[[bin]]
+name = "mdview"
+path = "src/main.rs"
